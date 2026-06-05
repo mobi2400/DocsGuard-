@@ -43,6 +43,8 @@
   },
   "dependencies": {
     "commander": "^15.0.0",
+    "minimatch": "^10.2.5",
+    "simple-git": "^3.36.0",
     "zod": "^4.4.3"
   }
 }
