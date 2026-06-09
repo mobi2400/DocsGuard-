@@ -1,6 +1,6 @@
 {
   "name": "@mobasshirkhan/docguard",
-  "version": "0.1.0",
+  "version": "0.1.1-beta.1",
   "description": "Documentation-aware code guard for AI-assisted development. Blocks commits whose changes violate your project's documented rules.",
   "keywords": [
     "ai",
