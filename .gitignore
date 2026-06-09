@@ -6,6 +6,7 @@ dist/
 
 .docguard/cache/
 .docguard/bypass.log
+.docguard/errors.log
 
 .DS_Store
 Thumbs.db

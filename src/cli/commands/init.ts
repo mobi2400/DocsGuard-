@@ -11,6 +11,7 @@ const GITIGNORE_ENTRIES = [
   "# DocGuard",
   ".docguard/cache/",
   ".docguard/bypass.log",
+  ".docguard/errors.log",
 ];
 
 export interface InitOptions {

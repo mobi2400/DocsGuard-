@@ -36,11 +36,13 @@ async function main(): Promise<void> {
     .command("check")
     .description("check staged changes against the configured docs")
     .option("-c, --config <path>", "path to .docguard.json")
-    .action(async (localOpts: { config?: string }, cmd: Command): Promise<void> => {
+    .option("--debug-scores", "print retrieval scores per chunk")
+    .action(async (localOpts: { config?: string; debugScores?: boolean }, cmd: Command): Promise<void> => {
       const globalOpts = cmd.optsWithGlobals<GlobalOptions>();
       const options: CheckOptions = {
         cwd: resolveCwd(globalOpts),
         ...(localOpts.config !== undefined ? { config: localOpts.config } : {}),
+        ...(localOpts.debugScores !== undefined ? { debugScores: localOpts.debugScores } : {}),
       };
       process.exitCode = await runCheck(options);
     });

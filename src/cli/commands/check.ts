@@ -1,3 +1,4 @@
+import { relative } from "node:path";
 import { loadConfig } from "../../config/load.js";
 import { listStagedFiles } from "../../git/staged-files.js";
 import { readStagedDiff } from "../../git/staged-diff.js";
@@ -14,12 +15,18 @@ import { bypassRequested } from "../../bypass/env.js";
 import { logBypass } from "../../bypass/log.js";
 import { DocGuardError } from "../../utils/errors.js";
 import { LlmAuthError } from "../../llm/provider.js";
+import { logError } from "../../utils/logger.js";
 import type { DocChunk } from "../../types/docs.js";
 import type { CheckOutcome } from "../../types/result.js";
 
 export interface CheckOptions {
   readonly cwd?: string;
   readonly config?: string;
+  readonly debugScores?: boolean;
+}
+
+function toRel(cwd: string, abs: string): string {
+  return relative(cwd, abs).replace(/\\/g, "/");
 }
 
 export async function runCheck(options: CheckOptions = {}): Promise<number> {
@@ -70,14 +77,7 @@ export async function runCheck(options: CheckOptions = {}): Promise<number> {
 
     const docShaByFile = new Map<string, string>();
     for (const d of docs) {
-      const rel = d.path.replace(/\\/g, "/");
-      docShaByFile.set(rel, d.sha);
-    }
-    for (const c of chunks) {
-      if (!docShaByFile.has(c.file)) {
-        const match = docs.find((d) => d.path.replace(/\\/g, "/").endsWith(c.file));
-        if (match !== undefined) docShaByFile.set(c.file, match.sha);
-      }
+      docShaByFile.set(toRel(cwd, d.path), d.sha);
     }
 
     const embedded = await embedChunksWithCache(chunks, { cwd, docShaByFile });
@@ -86,6 +86,15 @@ export async function runCheck(options: CheckOptions = {}): Promise<number> {
       minScore: cfg.retrieval.minScore,
       priority: cfg.priority,
     });
+
+    if (options.debugScores === true) {
+      for (const r of retrieved) {
+        process.stdout.write(`debug: ${r.file}\n`);
+        for (const h of r.hits) {
+          process.stdout.write(`  ${h.score.toFixed(3)}  ${h.chunk.id}\n`);
+        }
+      }
+    }
 
     const seen = new Set<string>();
     const relevant: DocChunk[] = [];
@@ -132,6 +141,8 @@ export async function runCheck(options: CheckOptions = {}): Promise<number> {
     }
     const message = err instanceof Error ? err.message : String(err);
     process.stderr.write(`docguard: unexpected error: ${message}\n`);
+    process.stderr.write(`docguard: details written to .docguard/errors.log\n`);
+    await logError(cwd, "runCheck", err);
     return 0;
   }
 }
