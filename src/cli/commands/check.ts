@@ -16,6 +16,7 @@ import { logBypass } from "../../bypass/log.js";
 import { DocGuardError } from "../../utils/errors.js";
 import { LlmAuthError } from "../../llm/provider.js";
 import { logError } from "../../utils/logger.js";
+import { loadDotenv } from "../../utils/dotenv.js";
 import type { DocChunk } from "../../types/docs.js";
 import type { CheckOutcome } from "../../types/result.js";
 
@@ -39,6 +40,7 @@ export async function runCheck(options: CheckOptions = {}): Promise<number> {
   }
 
   try {
+    loadDotenv({ cwd });
     const loaded = await loadConfig({
       cwd,
       ...(options.config !== undefined ? { configPath: options.config } : {}),

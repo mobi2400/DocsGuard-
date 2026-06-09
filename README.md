@@ -30,13 +30,25 @@ npx docguard init
 - update `.gitignore`
 - pre-warm the local embedding model (~25 MB one-time download)
 
-You also need a Groq API key (free tier works):
+You also need a Groq API key (free tier works). Three ways to set it:
 
+**`.env` file in your project root (easiest):**
+```
+GROQ_API_KEY=gsk_...
+```
+DocGuard reads `.env` from the repo root automatically. Existing shell env vars are not overridden.
+
+**Or shell session:**
 ```bash
 export GROQ_API_KEY=gsk_...
 ```
 
-Get one at [console.groq.com](https://console.groq.com). Without a key, DocGuard skips semantic checks and lets commits through.
+**Or system-wide (Windows):**
+```powershell
+setx GROQ_API_KEY "gsk_..."
+```
+
+Get a key at [console.groq.com](https://console.groq.com). Without one, DocGuard skips semantic checks and lets commits through.
 
 ## Requirements
 
