@@ -17,7 +17,7 @@ export const DEFAULT_CONFIG: DocGuardConfig = {
   },
   retrieval: {
     topK: 6,
-    minScore: 0.2,
+    minScore: 0.15,
   },
   timeoutMs: 5000,
 };

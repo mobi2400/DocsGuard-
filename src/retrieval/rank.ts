@@ -13,6 +13,8 @@ const PRIORITY_BONUS: Record<Priority, number> = {
 };
 
 const PATH_BOOST_WEIGHT = 0.1;
+const RELATIVE_GAP = 0.12;
+const ABSOLUTE_FLOOR = 0.15;
 
 export interface RankOptions {
   readonly topK: number;
@@ -69,7 +71,10 @@ export async function rankChunksForDiffs(
     });
 
     scored.sort((a, b) => b.score - a.score);
-    const hits = scored.filter((s) => s.score >= opts.minScore).slice(0, opts.topK);
+    const top = scored[0]?.score ?? 0;
+    const floor = Math.max(opts.minScore, ABSOLUTE_FLOOR);
+    const threshold = top >= floor ? Math.max(top - RELATIVE_GAP, floor) : floor;
+    const hits = scored.filter((s) => s.score >= threshold).slice(0, opts.topK);
     out.push({ file: diff.file.path, hits });
   }
 
