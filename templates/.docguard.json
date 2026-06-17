@@ -1,6 +1,18 @@
 {
   "docs": ["./docs/**/*.md"],
-  "ignore": ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**"],
+  "ignore": [
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/__pycache__/**",
+    "**/.pytest_cache/**",
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/venv/**",
+    "**/vendor/**"
+  ],
   "severity": {
     "security": "block",
     "architecture": "warn",

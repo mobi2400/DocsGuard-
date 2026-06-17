@@ -2,13 +2,13 @@
 
 > **Early beta — expect rough edges.** Documentation-aware pre-commit guard for AI-assisted development.
 
-DocGuard reads your project's markdown docs, looks at staged code changes, and blocks commits that contradict the rules you've written down. It is not a linter. It enforces *your* project's documented intent.
+DocGuard reads your project's markdown docs, looks at staged changes across any text-based language, and blocks commits that contradict the rules you've written down. It is not a linter. It enforces *your* project's documented intent.
 
 ```
-BLOCK src/userController.ts:5  [architecture]
-  Direct db.query() call from controller
+BLOCK services/user_service.py:18  [architecture]
+  Direct database call from request handler
   Cited: docs/architecture.md:23
-    "All DB access must go through the repository layer"
+    "All database access must go through the repository layer"
 
 Summary: 1 error(s), 0 warning(s).
 Commit blocked. Bypass: git commit --no-verify  or  DOCGUARD_BYPASS=1 git commit
@@ -22,6 +22,14 @@ Commit blocked. Bypass: git commit --no-verify  or  DOCGUARD_BYPASS=1 git commit
 npm install --save-dev @mobasshirkhan/docguard
 npx docguard init
 ```
+
+For `uv`-managed Python projects, you can bootstrap from this repo through `uvx`:
+
+```bash
+uvx --from git+https://github.com/mobi2400/DocsGuard-.git docguard install
+```
+
+That Python helper installs the npm package in the current repo and then runs `docguard init`. Use `--package-manager` if you want `pnpm`, `yarn`, or `bun` instead of auto-detecting.
 
 `docguard init` will:
 
@@ -84,7 +92,19 @@ docguard uninstall --purge      # also removes .docguard.json
 ```json
 {
   "docs": ["./docs/**/*.md"],
-  "ignore": ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**"],
+  "ignore": [
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/__pycache__/**",
+    "**/.pytest_cache/**",
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/venv/**",
+    "**/vendor/**"
+  ],
   "severity": {
     "security":     "block",
     "architecture": "warn",
@@ -119,6 +139,16 @@ docguard uninstall --purge      # also removes .docguard.json
 4. Ranks chunks against the diff by cosine + path overlap + priority.
 5. Sends only the top-relevant chunks plus the diff to Groq for judgment.
 6. Validates the response: every violation must cite a `chunk_id` with a quote that is a real substring of the chunk. Otherwise it's downgraded to a warning.
+
+DocGuard is language-agnostic at review time: if Git can stage it as text, DocGuard can compare that diff against your docs. The current package runtime is still Node-based, but the repository under review can be Python, Go, Java, Ruby, PHP, Rust, mixed-language monorepos, or anything similar.
+
+For Python and `uv` users, the companion bootstrap CLI supports:
+
+```bash
+uvx --from git+https://github.com/mobi2400/DocsGuard-.git docguard install
+uvx --from git+https://github.com/mobi2400/DocsGuard-.git docguard check
+uvx --from git+https://github.com/mobi2400/DocsGuard-.git docguard uninstall
+```
 
 ## Trust guarantees
 

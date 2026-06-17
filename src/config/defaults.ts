@@ -1,8 +1,22 @@
 import type { DocGuardConfig } from "./schema.js";
 
+export const DEFAULT_IGNORE_PATTERNS: readonly string[] = [
+  "**/*.test.*",
+  "**/*.spec.*",
+  "**/__tests__/**",
+  "**/test/**",
+  "**/tests/**",
+  "**/__pycache__/**",
+  "**/.pytest_cache/**",
+  "**/node_modules/**",
+  "**/.venv/**",
+  "**/venv/**",
+  "**/vendor/**",
+];
+
 export const DEFAULT_CONFIG: DocGuardConfig = {
   docs: ["./docs/**/*.md"],
-  ignore: ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**"],
+  ignore: [...DEFAULT_IGNORE_PATTERNS],
   severity: {
     security: "block",
     architecture: "warn",

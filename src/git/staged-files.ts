@@ -4,13 +4,24 @@ import type { StagedFile, ChangeKind } from "../types/diff.js";
 
 const LOCKFILE_PATTERNS: readonly string[] = [
   "**/package-lock.json",
+  "**/packages.lock.json",
   "**/yarn.lock",
   "**/pnpm-lock.yaml",
   "**/bun.lockb",
+  "**/bun.lock",
   "**/poetry.lock",
+  "**/Pipfile.lock",
+  "**/uv.lock",
+  "**/requirements*.txt",
   "**/Cargo.lock",
+  "**/go.sum",
   "**/composer.lock",
   "**/Gemfile.lock",
+  "**/Podfile.lock",
+  "**/Package.resolved",
+  "**/mix.lock",
+  "**/pubspec.lock",
+  "**/paket.lock",
 ];
 
 export interface ListStagedFilesOptions {

@@ -51,19 +51,20 @@ describe("listStagedFiles", () => {
   });
 
   it("respects ignore globs", async () => {
-    writeFileSync(join(dir, "a.test.ts"), "x\n", "utf8");
-    writeFileSync(join(dir, "b.ts"), "y\n", "utf8");
-    git("add a.test.ts b.ts");
-    const files = await listStagedFiles({ cwd: dir, ignore: ["**/*.test.ts"] });
-    expect(files.map((f) => f.path)).toEqual(["b.ts"]);
+    mkdirSync(join(dir, "tests"));
+    writeFileSync(join(dir, "tests", "api.test.py"), "x\n", "utf8");
+    writeFileSync(join(dir, "main.py"), "y\n", "utf8");
+    git("add tests/api.test.py main.py");
+    const files = await listStagedFiles({ cwd: dir, ignore: ["**/*.test.*", "**/tests/**"] });
+    expect(files.map((f) => f.path)).toEqual(["main.py"]);
   });
 
   it("skips lockfiles by default", async () => {
-    writeFileSync(join(dir, "package-lock.json"), "{}\n", "utf8");
-    writeFileSync(join(dir, "src.ts"), "x\n", "utf8");
-    git("add package-lock.json src.ts");
+    writeFileSync(join(dir, "go.sum"), "github.com/example/module v1.2.3 h1:abc\n", "utf8");
+    writeFileSync(join(dir, "main.go"), "package main\n", "utf8");
+    git("add go.sum main.go");
     const files = await listStagedFiles({ cwd: dir, ignore: [] });
-    expect(files.map((f) => f.path)).toEqual(["src.ts"]);
+    expect(files.map((f) => f.path)).toEqual(["main.go"]);
   });
 
   it("flags binary files", async () => {

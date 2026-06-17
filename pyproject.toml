@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling>=1.24.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "docguard"
+version = "0.1.1b4"
+description = "Python companion CLI for bootstrapping the Node-based DocGuard tool in uv-managed projects."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+  { name = "mobasshir khan" }
+]
+keywords = ["uv", "docguard", "git-hooks", "documentation", "pre-commit"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Version Control :: Git"
+]
+dependencies = []
+
+[project.scripts]
+docguard = "docguard_bootstrap.cli:main"
+dg = "docguard_bootstrap.cli:main"
+docguard-bootstrap = "docguard_bootstrap.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["docguard_bootstrap"]

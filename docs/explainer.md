@@ -2,9 +2,9 @@
 
 Documentation-aware code guard for AI-assisted development.
 
-DocGuard checks staged code changes against your project's Markdown docs before commit. It retrieves the most relevant doc sections for the diff, asks an LLM whether the change violates documented intent, and returns a clear `pass`, `warn`, or `block` result with citations.
+DocGuard checks staged changes against your project's Markdown docs before commit. It retrieves the most relevant doc sections for the diff, asks an LLM whether the change violates documented intent, and returns a clear `pass`, `warn`, or `block` result with citations.
 
-This package is designed for teams using AI coding tools who want repo-specific guardrails, not just generic linting.
+This package is designed for teams using AI coding tools who want repo-specific guardrails, not just generic linting. The CLI itself runs on Node.js, but the repository being reviewed can use any text-based programming language.
 
 ## Why DocGuard
 
@@ -49,6 +49,14 @@ npm install -D @mobasshirkhan/docguard
 
 Node.js `18.17+` is required.
 
+If your project uses `uv`, you can bootstrap DocGuard from a Python command:
+
+```bash
+uvx --from git+https://github.com/mobi2400/DocsGuard-.git docguard install
+```
+
+That helper installs the npm package into the current Git repo and runs `docguard init` for you.
+
 ## Quick Start
 
 1. Install the package.
@@ -61,6 +69,12 @@ npm install -D @mobasshirkhan/docguard
 
 ```bash
 npx docguard init
+```
+
+Or, from a `uv` workflow:
+
+```bash
+uvx --from git+https://github.com/mobi2400/DocsGuard-.git docguard install
 ```
 
 This will:
@@ -96,12 +110,12 @@ npx docguard check
 ## Example Output
 
 ```text
-BLOCK src/auth.ts:47  [security]
+BLOCK backend/auth.py:47  [security]
   Direct auth flow bypass detected in staged changes.
   Cited: docs/architecture.md:23
     "Authentication must be enforced through middleware."
 
-WARN  src/controllers/user.ts:12  [naming]
+WARN  services/user_service.go:12  [naming]
   The change appears to conflict with documented naming rules.
   Cited: docs/conventions.md:45
     "Use verb + resource naming for handlers."
@@ -160,7 +174,19 @@ Default template:
 ```json
 {
   "docs": ["./docs/**/*.md"],
-  "ignore": ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**"],
+  "ignore": [
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/__pycache__/**",
+    "**/.pytest_cache/**",
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/venv/**",
+    "**/vendor/**"
+  ],
   "severity": {
     "security": "block",
     "architecture": "warn",
@@ -295,7 +321,7 @@ Current release limitations:
 - Markdown docs only
 - Groq is the only supported LLM provider
 - semantic checking depends on doc quality
-- no language-specific AST enforcement yet
+- no language-specific AST enforcement yet, because the current engine is intentionally language-agnostic and works from staged text diffs plus docs
 - checks run on staged changes only
 
 ## Development
@@ -313,6 +339,11 @@ Useful scripts:
 - `npm run typecheck`
 - `npm test`
 - `npm run test:watch`
+
+Python bootstrap helper:
+
+- `uvx --from . docguard install`
+- `uvx --from . docguard check`
 
 ## License
 
